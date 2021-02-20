@@ -2,6 +2,6 @@
 	"name":"LunarBotChatBridgePrettifier",
 	"author": "muchnameless",
 	"description": "prettifies messages from the discord chat bridge",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"entry": "index.js"
 }
