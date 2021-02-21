@@ -16,24 +16,33 @@ register('chat', event => {
 
 	if (playerListMatched) {
 		for (let i = 0; i < playerListMatched.length; ++i) {
-			guildPlayers[playerListMatched[i].replace(/&[0-9a-gk-or]|\[.+?\]/g, '').trim()] = playerListMatched[i];
+			guildPlayers[playerListMatched[i].replace(/\[.+?\] |&[0-9a-gk-or]/g, '')] = playerListMatched[i];
 		}
 
-		print(`[chatBridge]: cached ${Object.keys(guildPlayers).length} players`) // debug info
+		// print(`[chatBridge]: cached ${Object.keys(guildPlayers).length} players`) // debug info
 	}
 });
 
 // initial '/gl' parsing
-setTimeout(() => {
-	let isFirstExecution = true;
+let init = register('worldLoad', () => {
+	setTimeout(() => {
+		let isFirstExecution = true;
 
-	const init = register('chat', event => {
-		cancel(event);
-		if (ChatLib.getChatMessage(event).includes('---------------------------------------')) {
-			if (isFirstExecution) return isFirstExecution = false;
-			init.unregister();
-		}
-	});
+		const initCommand = register('chat', event => {
+			const chatMessage = ChatLib.getChatMessage(event);
 
-	ChatLib.command('gl')
-}, 3_000);
+			if (/^Guild Name: |-- (?:[a-zA-Z]+ )+--|●|^(?:Total|Online) Members: /.test(chatMessage)) return cancel(event);
+
+			if (chatMessage.includes('---------------------------------------')) {
+				cancel(event);
+				if (isFirstExecution) return isFirstExecution = false;
+				initCommand.unregister();
+			}
+		}).setPriority(OnTrigger.Priority.LOWEST);
+
+		ChatLib.command('gl');
+	}, 5_000);
+
+	init.unregister();
+	init = undefined;
+});
