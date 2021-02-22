@@ -31,6 +31,9 @@ register('chat', event => {
 		return cancel(event);
 	}
 
+	// don't fill cache with randoms from partys
+	if (chatMessage.startsWith('&eParty ')) return;
+
 	// parse player displayNames from '/gl'
 	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+(?=&r&[ac] ●)/g);
 
