@@ -39,9 +39,9 @@ register('chat', event => {
 			guildPlayers[playerListMatched[i].replace(/\[.+?\] |&[0-9a-gk-or]/g, '')] = playerListMatched[i];
 		}
 
-		print(`[chatBridge]: cached ${Object.keys(guildPlayers).length} players`) // debug info
+		// print(`[chatBridge]: cached ${Object.keys(guildPlayers).length} players`) // debug info
 	}
-});
+}).setPriority(OnTrigger.Priority.HIGH);
 
 
 // initial '/gl' parsing
@@ -63,7 +63,7 @@ let init = register('worldLoad', () => {
 				if (isFirstExecution) return isFirstExecution = false;
 				initCommand.unregister();
 			}
-		}).setPriority(OnTrigger.Priority.LOWEST);
+		});
 
 		ChatLib.command('gl');
 	}, 5_000);
