@@ -1,50 +1,55 @@
-import { Setting, SettingsObject } from 'SettingsManager/SettingsManager';
-
-const settings = new SettingsObject('LunarBotChatBridgePrettifier', [
-	{
-		name: 'Chat Bridge',
-		settings: [
-			new Setting.TextInput('Prefix', 'Discord > '),
-			new Setting.StringSelector('Prefix colour', 7, [
-				'§4Dark Red', '§cRed', '§6Gold', '§eYellow', '§2Dark Green', '§aGreen', '§bAqua', '§3Dark Aqua', '§1Dark Blue', '§9Blue', '§dLight Purple', '§5Dark Purple', '§fWhite', '§7Grey', '§8Dark Grey', '§0Black',
-			]),
-			new Setting.StringSelector('Unknown player colour', 2, [
-				'§4Dark Red', '§cRed', '§6Gold', '§eYellow', '§2Dark Green', '§aGreen', '§bAqua', '§3Dark Aqua', '§1Dark Blue', '§9Blue', '§dLight Purple', '§5Dark Purple', '§fWhite', '§7Grey', '§8Dark Grey', '§0Black',
-			]),
-		],
-	},
-]).setCommand('chatbridge');
-
-Setting.register(settings);
+import settings from './settings';
+import cache from './PlayerCache';
 
 
-const guildPlayers = {};
+register('command', () => settings.openGUI()).setName('chatbridge');
+
 
 register('chat', event => {
+	if (!settings.enabled) return;
+
 	const chatMessage = ChatLib.getChatMessage(event, true);
 
 	// prettify chat bridge messages
-	const bridgeMessageMatched = chatMessage.match(/^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?Lunar_Bot(?:_2)?(?: &[0-9a-gk-or]\[\w+\])?&f: &r(\w+):/);
+	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w{1,16}):`));
 
 	if (bridgeMessageMatched) {
-		ChatLib.chat(`${settings.getSetting('Chat Bridge', 'Prefix colour').slice(0, 2)}${settings.getSetting('Chat Bridge', 'Prefix')}§r${guildPlayers[bridgeMessageMatched[1]] || settings.getSetting('Chat Bridge', 'Unknown player colour').slice(0, 2) + bridgeMessageMatched[1]}§f:${chatMessage.slice(bridgeMessageMatched[0].length)}`);
-		return cancel(event);
+		cancel(event);
+
+		if (settings.enableBlocking && settings.blockedIGNs.includes(bridgeMessageMatched[1])) return;
+
+		return ChatLib.chat(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f:${chatMessage.slice(bridgeMessageMatched[0].length)}`);
+	}
+
+	// add / remove players that joine / leave the guild
+	const joinedLeftMessageMatched = chatMessage.match(/^((?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w{1,16}) (joined|left) the guild!$/);
+
+	if (joinedLeftMessageMatched) {
+		switch (joinedLeftMessageMatched[2]) {
+			case 'joined':
+				return cache.add(joinedLeftMessageMatched[1]);
+
+			case 'left':
+				return cache.remove(joinedLeftMessageMatched[1]);
+		}
+
+		return;
 	}
 
 	// don't fill cache with randoms from partys
 	if (chatMessage.startsWith('&eParty ')) return;
 
 	// parse player displayNames from '/gl'
-	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+(?=&r&[ac] ●)/g);
+	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w{1,16}(?=&r&[ac] ●)/g);
 
 	if (playerListMatched) {
-		for (let i = 0; i < playerListMatched.length; ++i) {
-			guildPlayers[playerListMatched[i].replace(/\[.+?\] |&[0-9a-gk-or]/g, '')] = playerListMatched[i];
+		for (let i = playerListMatched.length; i--;) {
+			cache.add(playerListMatched[i])
 		}
 
-		// print(`[chatBridge]: cached ${Object.keys(guildPlayers).length} players`) // debug info
+		if (settings.debug) console.log(`[chatBridge]: cached ${cache.size} players`) // debug info
 	}
-}).setPriority(OnTrigger.Priority.HIGH);
+}).triggerIfCanceled(true);
 
 
 // initial '/gl' parsing
@@ -52,22 +57,5 @@ let init = register('worldLoad', () => {
 	init.unregister();
 	init = undefined;
 
-	setTimeout(() => {
-		let isFirstExecution = true;
-
-		// stop '/gl' from showing up in chat
-		const initCommand = register('chat', event => {
-			const chatMessage = ChatLib.getChatMessage(event);
-
-			if (/^Guild Name: |-- [a-zA-Z- ]+ --| ●|^(?:Total|Online) Members: /.test(chatMessage)) return cancel(event);
-
-			if (chatMessage.includes('---------------------------------------')) {
-				cancel(event);
-				if (isFirstExecution) return isFirstExecution = false;
-				initCommand.unregister();
-			}
-		});
-
-		ChatLib.command('gl');
-	}, 5_000);
+	if (settings.enabled) setTimeout(() => cache.populate(), 5_000);
 });

@@ -3,7 +3,7 @@
 	"author": "muchnameless",
 	"description": "prettifies messages from the discord chat bridge\n/chatbridge to open settings",
 	"helpMessage": "/chatbridge to open settings",
-	"version": "1.3.0",
-	"requires": [ "SettingsManager" ],
+	"version": "2.0.0",
+	"requires": [ "Vigilance" ],
 	"entry": "index.js"
 }
