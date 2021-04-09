@@ -6,6 +6,11 @@ const colourCodes = colours.map(x => x.slice(0, 2));
 
 @Vigilant('LunarBotChatBridgePrettifier')
 class Settings {
+
+	/**
+	 * General
+	 */
+	
 	@SwitchProperty({
 		name: 'Enabled',
 		description: 'Enables the ct module',
@@ -43,6 +48,9 @@ class Settings {
 	})
 	_blockedIGNs = '';
 
+	/**
+	 * Appearance
+	 */
 
 	@TextProperty({
 		name: 'Prefix',
@@ -68,6 +76,9 @@ class Settings {
 	})
 	_uncachedPlayerColour = 2;
 
+	/**
+	 * Player Cache
+	 */
 
 	@ButtonProperty({
 		name: 'Reload',
@@ -89,6 +100,7 @@ class Settings {
 	clearButtonAction() {
 		cache.clear();
 	}
+
 
 	constructor() {
 		this.initialize(this);
