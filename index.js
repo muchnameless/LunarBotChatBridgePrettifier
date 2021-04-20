@@ -11,7 +11,7 @@ register('chat', event => {
 	const chatMessage = ChatLib.getChatMessage(event, true);
 
 	// prettify chat bridge messages
-	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w{1,16}):`));
+	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w+):`));
 
 	if (bridgeMessageMatched) {
 		cancel(event);
@@ -22,7 +22,7 @@ register('chat', event => {
 	}
 
 	// add / remove players that joine / leave the guild
-	const joinedLeftMessageMatched = chatMessage.match(/^((?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w{1,16}) (joined|left) the guild!$/);
+	const joinedLeftMessageMatched = chatMessage.match(/^((?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+) (joined|left) the guild!$/);
 
 	if (joinedLeftMessageMatched) {
 		switch (joinedLeftMessageMatched[2]) {
@@ -40,7 +40,7 @@ register('chat', event => {
 	if (chatMessage.startsWith('&eParty ')) return;
 
 	// parse player displayNames from '/gl'
-	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w{1,16}(?=&r&[ac] ●)/g);
+	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+(?=&r&[ac] ●)/g);
 
 	if (playerListMatched) {
 		for (let i = playerListMatched.length; i--;) {
