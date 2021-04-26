@@ -42,7 +42,7 @@ class Settings {
 
 	@TextProperty({
 		name: 'Blocked IGNs',
-		description: 'IGNs of players to ignore bridge messages from, separated by ","',
+		description: 'IGNs of players to ignore bridge messages from, case insensitive, separated by ","',
 		category: 'General',
 		placeholder: 'None',
 	})
@@ -67,6 +67,22 @@ class Settings {
 		options: colours,
 	})
 	_prefixColour = 7;
+
+	@TextProperty({
+		name: 'Postfix',
+		description: 'Chat postfix for bridge messages',
+		category: 'Appearance',
+		placeholder: 'None',
+	})
+	postfix = '';
+
+	@SelectorProperty({
+		name: 'Postfix Colour',
+		description: 'Chat postfix colour for bridge messages',
+		category: 'Appearance',
+		options: colours,
+	})
+	_postfixColour = 7;
 
 	@SelectorProperty({
 		name: 'Uncached Player Colour',
@@ -110,15 +126,26 @@ class Settings {
 
 		this.registerListener('enabled', status => status && cache.populate());
 
-		this.registerListener('_prefixColour', newColour => this.prefixColour = colourCodes[newColour]);
-		this.prefixColour = colourCodes[this._prefixColour];
+		const splitIGNs = igns => igns
+			.split(',')
+			.map(ign => ign.replace(/\W/g, '').toLowerCase())
+			.filter(({ length }) => length);
 
-		this.registerListener('_uncachedPlayerColour', newColour => this.uncachedPlayerColour = colourCodes[newColour]);
-		this.uncachedPlayerColour = colourCodes[this._uncachedPlayerColour];
+		this.registerListener('_blockedIGNs', newIGNs => this.blockedIGNs = splitIGNs(newIGNs));
+		this.blockedIGNs = splitIGNs(this._blockedIGNs)
+	}
 
-		this.registerListener('_blockedIGNs', newIGNs => this.blockedIGNs = newIGNs.split(','));
-		this.blockedIGNs = this._blockedIGNs.split(',');
+	get prefixColour() {
+		return colourCodes[this._prefixColour];
+	}
+
+	get postfixColour() {
+		return colourCodes[this._postfixColour];
+	}
+
+	get uncachedPlayerColour() {
+		return colourCodes[this._uncachedPlayerColour];
 	}
 }
 
-export default new Settings;
+export default new Settings();

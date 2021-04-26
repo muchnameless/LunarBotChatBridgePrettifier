@@ -31,4 +31,4 @@ class PlayerCache extends Map {
 	}
 }
 
-export default new PlayerCache;
+export default new PlayerCache();
