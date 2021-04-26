@@ -18,9 +18,9 @@ class PlayerCache extends Map {
 		const initCommand = register('chat', event => {
 			const chatMessage = ChatLib.getChatMessage(event);
 
-			if (/^Guild Name: |-- [a-zA-Z- ]+ --| ●|^(?:Total|Online) Members: /.test(chatMessage)) return cancel(event);
+			if (!chatMessage.length || /^Guild Name: |-- [a-zA-Z- ]+ --| ●|^(?:Total|Online) Members: /.test(chatMessage)) return cancel(event);
 
-			if (chatMessage.includes('---------------------------------------')) {
+			if (chatMessage.startsWith('----------')) {
 				cancel(event);
 				if (isFirstExecution) return isFirstExecution = false;
 				initCommand.unregister();
