@@ -143,7 +143,7 @@ class Settings {
 			.filter(({ length }) => length);
 
 		this.registerListener('_blockedIGNs', newIGNs => this.blockedIGNs = splitIGNs(newIGNs));
-		this.blockedIGNs = splitIGNs(this._blockedIGNs)
+		this.blockedIGNs = splitIGNs(this._blockedIGNs);
 	}
 
 	get prefix() {
