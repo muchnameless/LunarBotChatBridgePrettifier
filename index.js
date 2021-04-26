@@ -35,23 +35,16 @@ register('chat', event => {
 			.chat();
 	}
 
-	// add / remove players that joine / leave the guild
+
+	// add / remove players that join / leave the guild
 	const joinedLeftMessageMatched = chatMessage.match(/^((?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+) (joined|left) the guild!$/);
 
-	if (joinedLeftMessageMatched) {
-		switch (joinedLeftMessageMatched[2]) {
-			case 'joined':
-				return cache.add(joinedLeftMessageMatched[1]);
+	if (joinedLeftMessageMatched) return cache[joinedLeftMessageMatched[2] === 'joined' ? 'add' : 'remove'](joinedLeftMessageMatched[1])
 
-			case 'left':
-				return cache.remove(joinedLeftMessageMatched[1]);
-		}
 
-		return;
-	}
-
-	// don't fill cache with randoms from partys
+	// don't fill cache with players from partys
 	if (chatMessage.startsWith('&eParty ')) return;
+
 
 	// parse player displayNames from '/gl'
 	const playerListMatched = chatMessage.match(/(?:&[0-9a-gk-or]){0,2}(?:\[.+?\] )?\w+(?=&r&[ac] ●)/g);
