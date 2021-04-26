@@ -26,11 +26,11 @@ register('chat', event => {
 		return message
 			.setTextComponent(
 				0,
-				firstComponent.setText(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f: `)
+				firstComponent.setText(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f: `),
 			)
 			.setTextComponent(
 				1,
-				secondComponent.setText(secondComponent.getText().split(': ').slice(1).join(': '))
+				secondComponent.setText(secondComponent.getText().split(': ').slice(1).join(': ')),
 			)
 			.chat();
 	}
