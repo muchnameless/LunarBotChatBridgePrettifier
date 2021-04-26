@@ -92,6 +92,17 @@ class Settings {
 	})
 	_uncachedPlayerColour = 2;
 
+	@ButtonProperty({
+		name: 'Test',
+		description: 'Sends test messages in chat',
+		category: 'Appearance',
+		placeholder: 'Test'
+	})
+	testButtonAction() {
+		ChatLib.chat(`${this.prefix}§r§6[MVP§4++§6] In_Guild${this.postfix}§r: test 1`);
+		ChatLib.chat(`${this.prefix}§r${this.uncachedPlayerColour}Not_In_Guild${this.postfix}§r: test 2`);
+	}
+
 	/**
 	 * Player Cache
 	 */
