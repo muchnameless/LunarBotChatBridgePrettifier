@@ -26,7 +26,7 @@ register('chat', event => {
 		return message
 			.setTextComponent(
 				0,
-				firstComponent.setText(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f: `),
+				firstComponent.setText(`${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}${settings.postfix}§r: `),
 			)
 			.setTextComponent(
 				1,
