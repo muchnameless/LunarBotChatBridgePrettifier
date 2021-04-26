@@ -21,11 +21,6 @@ register('chat', event => {
 
 		// use TextComponent to preserve onClick and onHover values
 		const message = new Message(event);
-
-		message.getMessageParts().forEach((component, index) => {
-			console.log(index, component.getText());
-		});
-
 		const [ firstComponent, secondComponent ] = message.getMessageParts();
 
 		return message
