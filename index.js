@@ -16,9 +16,28 @@ register('chat', event => {
 	if (bridgeMessageMatched) {
 		cancel(event);
 
-		if (settings.enableBlocking && settings.blockedIGNs.includes(bridgeMessageMatched[1])) return;
+		// blocked IGNs
+		if (settings.enableBlocking && settings.blockedIGNs.includes(bridgeMessageMatched[1].toLowerCase())) return;
 
-		return ChatLib.chat(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f:${chatMessage.slice(bridgeMessageMatched[0].length)}`);
+		// use TextComponent to preserve onClick and onHover values
+		const message = new Message(event);
+
+		message.getMessageParts().forEach((component, index) => {
+			console.log(index, component.getText());
+		});
+
+		const [ firstComponent, secondComponent ] = message.getMessageParts();
+
+		return message
+			.setTextComponent(
+				0,
+				firstComponent.setText(`${settings.prefixColour}${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}§f: `)
+			)
+			.setTextComponent(
+				1,
+				secondComponent.setText(secondComponent.getText().split(': ').slice(1).join(': '))
+			)
+			.chat();
 	}
 
 	// add / remove players that joine / leave the guild
