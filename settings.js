@@ -58,7 +58,7 @@ class Settings {
 		category: 'Appearance',
 		placeholder: 'None',
 	})
-	prefix = 'Discord > ';
+	_prefix = 'Discord > ';
 
 	@SelectorProperty({
 		name: 'Prefix Colour',
@@ -74,7 +74,7 @@ class Settings {
 		category: 'Appearance',
 		placeholder: 'None',
 	})
-	postfix = '';
+	_postfix = '';
 
 	@SelectorProperty({
 		name: 'Postfix Colour',
@@ -135,12 +135,12 @@ class Settings {
 		this.blockedIGNs = splitIGNs(this._blockedIGNs)
 	}
 
-	get prefixColour() {
-		return colourCodes[this._prefixColour];
+	get prefix() {
+		return `${colourCodes[this._prefixColour]}${this._prefix}`
 	}
 
-	get postfixColour() {
-		return colourCodes[this._postfixColour];
+	get postfix() {
+		return `${colourCodes[this._postfixColour]}${this._postfix}`;
 	}
 
 	get uncachedPlayerColour() {
