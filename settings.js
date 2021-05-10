@@ -1,4 +1,4 @@
-import { @Vigilant, @TextProperty, @ColorProperty, @ButtonProperty, @SwitchProperty, @SelectorProperty, Color } from 'Vigilance';
+import { @Vigilant, @TextProperty, @ButtonProperty, @SwitchProperty, @SelectorProperty } from 'Vigilance';
 import cache from './PlayerCache';
 
 const colours = [ '§4Dark Red', '§cRed', '§6Gold', '§eYellow', '§2Dark Green', '§aGreen', '§bAqua', '§3Dark Aqua', '§1Dark Blue', '§9Blue', '§dLight Purple', '§5Dark Purple', '§fWhite', '§7Grey', '§8Dark Grey', '§0Black' ];
