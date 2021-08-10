@@ -34,11 +34,11 @@ class Settings {
 	botIGN = 'Lunar_Bot(?:_2)?';
 
 	@SwitchProperty({
-		name: 'Enable Blocking',
+		name: 'Enable IGN Blocking',
 		description: 'Ignore messages from players in "Blocked IGNs"',
 		category: 'General',
 	})
-	enableBlocking = true;
+	enableIGNBlocking = false;
 
 	@TextProperty({
 		name: 'Blocked IGNs',
@@ -47,6 +47,31 @@ class Settings {
 		placeholder: 'None',
 	})
 	_blockedIGNs = '';
+
+	@SwitchProperty({
+		name: 'Enable Content Blocking',
+		description: 'Ignore messages which contain certain phrases',
+		category: 'General',
+	})
+	enableContentBlocking = false;
+
+	@TextProperty({
+		name: 'Blocked Content',
+		description: 'Regular expression to filter the content by. Since the input is via a string you need to double escape (\'\\\' -> \'\\\\\'). Use \'regex101.com\', choose ECMAScript on the left and set the flags to \'i\'',
+		category: 'General',
+		placeholder: 'None',
+	})
+	_contentFilter = '';
+
+	@ButtonProperty({
+		name: 'Blocked Messages',
+		description: 'Show blocked messages',
+		category: 'General',
+		placeholder: 'Show'
+	})
+	showConsoleButtonAction() {
+		ChatLib.command('ct console js', true);
+	}
 
 	/**
 	 * Appearance
@@ -144,6 +169,9 @@ class Settings {
 
 		this.registerListener('_blockedIGNs', newIGNs => this.blockedIGNs = splitIGNs(newIGNs));
 		this.blockedIGNs = splitIGNs(this._blockedIGNs);
+
+		this.registerListener('_contentFilter', newContent => this.contentFilter = new RegExp(newContent, 'i'));
+		this.contentFilter = new RegExp(this._contentFilter, 'i');
 	}
 
 	get prefix() {

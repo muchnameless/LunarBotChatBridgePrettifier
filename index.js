@@ -10,6 +10,12 @@ register('chat', event => {
 
 	const chatMessage = ChatLib.getChatMessage(event, true);
 
+	// content filter
+	if (settings.enableContentBlocking && settings.contentFilter.test(chatMessage)) {
+		console.log(`[blocked]: ${chatMessage}`);
+		return cancel(event);
+	}
+
 	// prettify chat bridge messages
 	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w+):`));
 
@@ -17,7 +23,7 @@ register('chat', event => {
 		cancel(event);
 
 		// blocked IGNs
-		if (settings.enableBlocking && settings.blockedIGNs.includes(bridgeMessageMatched[1].toLowerCase())) return;
+		if (settings.enableIGNBlocking && settings.blockedIGNs.includes(bridgeMessageMatched[1].toLowerCase())) return;
 
 		// use TextComponent to preserve onClick and onHover values
 		const message = new Message(event);
@@ -56,13 +62,16 @@ register('chat', event => {
 
 		if (settings.debug) console.log(`[chatBridge]: cached ${cache.size} players`) // debug info
 	}
-}).triggerIfCanceled(true);
+}).setPriority(OnTrigger.Priority.HIGHEST);
 
 
 // initial '/gl' parsing
 let init = register('worldLoad', () => {
-	init.unregister();
+	console.log(init);
+	if (init) init.unregister();
 	init = undefined;
 
-	if (settings.enabled) setTimeout(() => cache.populate(), 5_000);
+	console.log('TRIGGERED WORLD_LOAD');
+
+	if (settings.enabled && !cache.size) setTimeout(() => cache.populate(), 5_000);
 });
