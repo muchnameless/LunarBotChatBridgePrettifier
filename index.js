@@ -1,3 +1,6 @@
+/// <reference types="../CTAutocomplete" />
+/// <reference lib="es2015" />
+
 import settings from './settings';
 import cache from './PlayerCache';
 
@@ -67,11 +70,8 @@ register('chat', event => {
 
 // initial '/gl' parsing
 let init = register('worldLoad', () => {
-	console.log(init);
 	if (init) init.unregister();
 	init = undefined;
-
-	console.log('TRIGGERED WORLD_LOAD');
 
 	if (settings.enabled && !cache.size) setTimeout(() => cache.populate(), 5_000);
 });
