@@ -16,7 +16,7 @@ register('chat', event => {
 
 	// prettify chat bridge messages
 	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w+):`));
-	const paddingMatched = settings.enablePaddingRemover && chatMessage.match(/(?: (?:-{4}|_{4}|\/{4}))+$/);
+	const paddingMatched = settings.enablePaddingRemover && chatMessage.match(/(?: (?:-{4}|_{4}|\/{4}))+&r$/);
 
 	if (bridgeMessageMatched) {
 		cancel(event);
@@ -35,7 +35,7 @@ register('chat', event => {
 			)
 			.setTextComponent(
 				1,
-				components[1].setText(components[1].getText().split(': ', 1)[0]),
+				components[1].setText(components[1].getText().split(': ', 2)[1]),
 			);
 
 		if (paddingMatched) {
@@ -49,6 +49,8 @@ register('chat', event => {
 	}
 
 	if (paddingMatched) {
+		cancel(event);
+
 		// use TextComponent to preserve onClick and onHover values
 		const message = new Message(event);
 		const components = message.getMessageParts();
