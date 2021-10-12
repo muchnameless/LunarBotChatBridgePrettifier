@@ -31,7 +31,7 @@ class Settings {
 		category: 'General',
 		placeholder: 'None',
 	})
-	botIGN = 'Lunar_Bridge|Lunar_Bot(?:_2)?';
+	botIGN = 'Lunar_B(?:ridge|ot(?:_2))?';
 
 	@SwitchProperty({
 		name: 'Enable IGN Blocking',
