@@ -1,5 +1,6 @@
 /// <reference types="../CTAutocomplete" />
 /// <reference lib="es2015" />
+// @ts-check
 
 import settings from './settings';
 import cache from './PlayerCache';
@@ -13,14 +14,9 @@ register('chat', event => {
 
 	const chatMessage = ChatLib.getChatMessage(event, true);
 
-	// content filter
-	if (settings.enableContentBlocking && settings.contentFilter.test(chatMessage)) {
-		console.log(`[blocked]: ${chatMessage}`);
-		return cancel(event);
-	}
-
 	// prettify chat bridge messages
 	const bridgeMessageMatched = chatMessage.match(new RegExp(`^&r&2Guild > (?:&[0-9a-gk-or]){0,2}(?:\\[.+?\\] )?${settings.botIGN}(?: &[0-9a-gk-or]\\[[a-zA-Z]{1,5}\\])?&f: &r(\\w+):`));
+	const paddingMatched = settings.enablePaddingRemover && chatMessage.match(/(?: (?:-{4}|_{4}|\/{4}))+$/);
 
 	if (bridgeMessageMatched) {
 		cancel(event);
@@ -30,16 +26,37 @@ register('chat', event => {
 
 		// use TextComponent to preserve onClick and onHover values
 		const message = new Message(event);
-		const [ firstComponent, secondComponent ] = message.getMessageParts();
+		const components = message.getMessageParts();
 
-		return message
+		message
 			.setTextComponent(
 				0,
-				firstComponent.setText(`${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}${settings.postfix}§r: `),
+				components[0].setText(`${settings.prefix}§r${cache.get(bridgeMessageMatched[1]) || settings.uncachedPlayerColour + bridgeMessageMatched[1]}${settings.postfix}§r: `),
 			)
 			.setTextComponent(
 				1,
-				secondComponent.setText(secondComponent.getText().split(': ').slice(1).join(': ')),
+				components[1].setText(components[1].getText().split(': ', 1)[0]),
+			);
+
+		if (paddingMatched) {
+			message.setTextComponent(
+				components.length - 1,
+				components[components.length - 1].getText().slice(0, -paddingMatched[0].length),
+			);
+		}
+
+		return message.chat();
+	}
+
+	if (paddingMatched) {
+		// use TextComponent to preserve onClick and onHover values
+		const message = new Message(event);
+		const components = message.getMessageParts();
+
+		return message
+			.setTextComponent(
+				components.length - 1,
+				components[components.length - 1].getText().slice(0, -paddingMatched[0].length),
 			)
 			.chat();
 	}
