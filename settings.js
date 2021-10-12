@@ -151,9 +151,6 @@ class Settings {
 
 		this.registerListener('_blockedIGNs', newIGNs => this.blockedIGNs = splitIGNs(newIGNs));
 		this.blockedIGNs = splitIGNs(this._blockedIGNs);
-
-		this.registerListener('_contentFilter', newContent => this.contentFilter = new RegExp(newContent, 'i'));
-		this.contentFilter = new RegExp(this._contentFilter, 'i');
 	}
 
 	get prefix() {
